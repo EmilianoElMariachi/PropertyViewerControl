@@ -1,0 +1,43 @@
+﻿<Window x:Class="PropertyViewerControl.Demo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:propertyViewerControl="clr-namespace:PropertyViewerControl;assembly=PropertyViewerControl"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <StackPanel>
+            <propertyViewerControl:PropertyViewer x:Name="PropertyViewer" />
+            <DataGrid x:Name="DataGrid">
+                <DataGrid.Columns>
+                    <DataGridTextColumn />
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <!--<treeGridViewDemo:TreeGrid x:Name="TreeGrid" AutoGenerateColumns="False">
+            <treeGridViewDemo:TreeGrid.ItemContainerStyle>
+                <Style TargetType="treeGridViewDemo:TreeGridRow">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="treeGridViewDemo:TreeGridRow">
+                                <Grid Margin="{TemplateBinding LevelMargin}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Expander Grid.Column="0" />
+                                    <DataGridCellsPresenter  Grid.Column="1" ></DataGridCellsPresenter>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </treeGridViewDemo:TreeGrid.ItemContainerStyle>
+
+            <treeGridViewDemo:TreeGrid.Columns>
+                <DataGridTextColumn></DataGridTextColumn>
+            </treeGridViewDemo:TreeGrid.Columns>
+        </treeGridViewDemo:TreeGrid>-->
+    </Grid>
+</Window>
