@@ -12,7 +12,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
 
-                    <Border x:Name="Border" Width="16" Height="16" RenderTransformOrigin=".5,.5" Background="Red">
+                    <Border x:Name="Border" Width="16" Height="16" RenderTransformOrigin=".5,.5" Background="Purple">
                         <Border.RenderTransform>
                             <RotateTransform Angle="0" />
                         </Border.RenderTransform>
@@ -29,7 +29,7 @@
                                                          To="45" Duration="00:00:01.000" />
                                     </Storyboard>
                                 </BeginStoryboard>
-                            </Trigger.EnterActions>  
+                            </Trigger.EnterActions>
                             <Trigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard >
@@ -101,7 +101,31 @@
     <Style TargetType="treeGridViewDemo:PropertyViewerRow">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate>
+                <ControlTemplate TargetType="treeGridViewDemo:PropertyViewerRow">
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="False">
+                            <Trigger.EnterActions >
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="PART_ChildRowsContainer"
+                                                         Storyboard.TargetProperty="MaxHeight"
+                                                         To="0"
+                                                         Duration="0:00:01"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions >
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="PART_ChildRowsContainer"
+                                                         Storyboard.TargetProperty="MaxHeight"
+                                                         Duration="0:00:01"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+
                     <StackPanel>
                         <Grid Background="Red">
                             <Grid.ColumnDefinitions>

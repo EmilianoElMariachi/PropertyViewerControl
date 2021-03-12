@@ -136,7 +136,7 @@ namespace PropertyViewerControl
 
         public PropertyViewerRow GetRowForProperty(IProperty property, int level)
         {
-            return new PropertyViewerRow(this, property, level);
+            return new(this, property, level);
         }
 
         private void UpdateViewFromObjectSource()

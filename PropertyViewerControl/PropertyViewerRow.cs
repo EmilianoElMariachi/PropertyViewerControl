@@ -27,12 +27,8 @@ namespace PropertyViewerControl
 
 
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register(
-            "IsExpanded", typeof(bool), typeof(PropertyViewerRow), new PropertyMetadata(false, OnIsExpandedChanged));
+            "IsExpanded", typeof(bool), typeof(PropertyViewerRow), new PropertyMetadata(false));
 
-        private static void OnIsExpandedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((PropertyViewerRow)d).OnIsExpandedChanged();
-        }
 
         public bool IsExpanded
         {
@@ -101,20 +97,7 @@ namespace PropertyViewerControl
                     }
                 }
             }
-
-            UpdateChildRowsVisibility();
         }
 
-        private void OnIsExpandedChanged()
-        {
-            UpdateChildRowsVisibility();
-        }
-
-        private void UpdateChildRowsVisibility()
-        {
-            var childrenContainer = _childRowsContainer;
-            if (childrenContainer != null)
-                childrenContainer.Visibility = IsExpanded ? Visibility.Visible : Visibility.Collapsed;
-        }
     }
 }
