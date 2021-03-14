@@ -45,6 +45,21 @@
         </Setter>
     </Style>
 
+    <Style x:Key="NameValueGridSplitter" TargetType="GridSplitter">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="1,0" />
+        <Setter Property="Background" Value="DarkGray" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="GridSplitter">
+                    <Border Background="Transparent" Padding="1,0" >
+                        <Rectangle Width="1" Fill="{TemplateBinding Background}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- PropertyViewer -->
     <Style TargetType="{x:Type treeGridViewDemo:PropertyViewer}">
 
@@ -68,21 +83,13 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Cell for the Header Property Name -->
-                                    <ContentControl Grid.Column="0" x:Name="HeaderProperty" Content="{TemplateBinding HeaderPropertyName}" />
+                                    <ContentControl x:Name="HeaderProperty" Grid.Column="0" Content="{TemplateBinding HeaderPropertyName}" />
 
                                     <!-- Grid Splitter -->
-                                    <GridSplitter x:Name="PART_GridSplitter" Grid.Column="1" HorizontalAlignment="Stretch" Margin="1,0" Background="DarkGray" >
-                                        <GridSplitter.Template>
-                                            <ControlTemplate TargetType="GridSplitter">
-                                                <Border Background="Transparent" Padding="1,0" >
-                                                    <Rectangle Width="1" Fill="{TemplateBinding Background}" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </GridSplitter.Template>
-                                    </GridSplitter>
+                                    <GridSplitter x:Name="PART_GridSplitter" Grid.Column="1" Style="{StaticResource NameValueGridSplitter}" />
 
                                     <!-- Cell for the Header Property Value -->
-                                    <ContentControl Grid.Column="2" x:Name="HeaderValue" Content="{TemplateBinding HeaderPropertyValue}"/>
+                                    <ContentControl  x:Name="HeaderValue" Grid.Column="2" Content="{TemplateBinding HeaderPropertyValue}"/>
                                 </Grid>
 
                             </StackPanel>
@@ -111,6 +118,8 @@
                             </Grid.ColumnDefinitions>
 
                             <cells:PropertyViewerCellName x:Name="PART_NameCell" Grid.Column="0" />
+                            <!-- Grid Splitter -->
+                            <GridSplitter x:Name="PART_GridSplitter" Grid.Column="1" Style="{StaticResource NameValueGridSplitter}" />
 
                             <cells:PropertyViewerCellValue x:Name="PART_ValueCell" Grid.Column="2" />
                         </Grid>
