@@ -15,7 +15,6 @@ namespace PropertyViewerControl
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyViewerRow), new FrameworkPropertyMetadata(typeof(PropertyViewerRow)));
         }
 
-
         public static readonly DependencyProperty LevelProperty = DependencyProperty.Register(
             "Level", typeof(int), typeof(PropertyViewerRow), new PropertyMetadata(default(int)));
 
@@ -25,15 +24,22 @@ namespace PropertyViewerControl
             private set => SetValue(LevelProperty, value);
         }
 
-
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register(
             "IsExpanded", typeof(bool), typeof(PropertyViewerRow), new PropertyMetadata(false));
-
 
         public bool IsExpanded
         {
             get => (bool)GetValue(IsExpandedProperty);
             set => SetValue(IsExpandedProperty, value);
+        }
+
+        public static readonly DependencyProperty HasChildrenProperty = DependencyProperty.Register(
+            "HasChildren", typeof(bool), typeof(PropertyViewerRow), new PropertyMetadata(default(bool)));
+
+        public bool HasChildren
+        {
+            get => (bool)GetValue(HasChildrenProperty);
+            private set => SetValue(HasChildrenProperty, value);
         }
 
         public PropertyViewerCellName? PropertyViewerNameCell { get; private set; }
@@ -57,6 +63,7 @@ namespace PropertyViewerControl
         {
             get
             {
+
                 if (_childRowsContainer == null)
                     yield break;
 
@@ -76,16 +83,24 @@ namespace PropertyViewerControl
             PropertyViewerValueCell = GetTemplateChild("PART_ValueCell") as PropertyViewerCellValue;
             _childRowsContainer = GetTemplateChild("PART_ChildRowsContainer") as Panel;
 
-            if (PropertyViewerNameCell != null)
-                PropertyViewerNameCell.DataContext = Property.Name;
+            InitializeWithBoundProperty();
+        }
 
-            if (PropertyViewerValueCell != null)
-                PropertyViewerValueCell.DataContext = Property.Value;
+        private void InitializeWithBoundProperty()
+        {
+            var propertyViewerNameCell = PropertyViewerNameCell;
+            if (propertyViewerNameCell != null)
+                propertyViewerNameCell.DataContext = Property.Name;
 
-            if (_childRowsContainer != null)
+            var propertyViewerValueCell = PropertyViewerValueCell;
+            if (propertyViewerValueCell != null)
+                propertyViewerValueCell.DataContext = Property.Value;
+
+            var childRowsContainer = _childRowsContainer;
+
+            if (childRowsContainer != null)
             {
-                _childRowsContainer.Children.Clear();
-
+                childRowsContainer.Children.Clear();
 
                 var children = Property.Children;
                 if (children != null)
@@ -93,11 +108,12 @@ namespace PropertyViewerControl
                     var childRows = children.Select(property => PropertyViewer.GetRowForProperty(property, this.Level + 1));
                     foreach (var childRow in childRows)
                     {
-                        _childRowsContainer.Children.Add(childRow);
+                        childRowsContainer.Children.Add(childRow);
                     }
                 }
             }
-        }
 
+            HasChildren = Children.Any();
+        }
     }
 }

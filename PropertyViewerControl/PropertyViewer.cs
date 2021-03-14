@@ -15,6 +15,8 @@ namespace PropertyViewerControl
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyViewer), new FrameworkPropertyMetadata(typeof(PropertyViewer)));
         }
 
+        #region Dependency Properties
+
         public static readonly DependencyProperty PropertyAnalyzerProperty = DependencyProperty.Register(
             "PropertyAnalyzer", typeof(IPropertyAnalyzer), typeof(PropertyViewer), new PropertyMetadata(new DefaultPropertyAnalyzer(), (_, args) =>
             {
@@ -52,7 +54,6 @@ namespace PropertyViewerControl
             set => SetValue(HeaderPropertyNameProperty, value);
         }
 
-
         public static readonly DependencyProperty HeaderPropertyValueProperty = DependencyProperty.Register(
             "HeaderPropertyValue", typeof(object), typeof(PropertyViewer), new PropertyMetadata("Value"));
 
@@ -62,7 +63,10 @@ namespace PropertyViewerControl
             set => SetValue(HeaderPropertyValueProperty, value);
         }
 
+        #endregion
+
         private Panel? _rowsContainer;
+
         protected GridSplitter? _gridSplitter;
         protected ColumnDefinition? _nameColumnDefinition;
         protected ColumnDefinition? _valueColumnDefinition;
@@ -112,7 +116,7 @@ namespace PropertyViewerControl
             var nameColumnDefinition = _nameColumnDefinition;
             if (nameColumnDefinition == null)
                 return;
-            var width = 0d;
+            var width = 0d; //TODO: tenir compte de la cellule des headers
 
             var remainingRows = new List<PropertyViewerRow>();
             remainingRows.AddRange(Rows);
@@ -122,7 +126,8 @@ namespace PropertyViewerControl
                 var row = remainingRows[0];
                 remainingRows.RemoveAt(0);
 
-                remainingRows.AddRange(row.Children);
+                if (row.IsExpanded)
+                    remainingRows.AddRange(row.Children);
 
                 var nameCell = row.PropertyViewerNameCell;
                 if (nameCell == null)
