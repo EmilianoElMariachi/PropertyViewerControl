@@ -2,7 +2,7 @@
 
 namespace PropertyViewerControl.Cells
 {
-    public abstract class PropertyViewerCell : Control
+    public abstract class CellBase : Control
     {
 
     }

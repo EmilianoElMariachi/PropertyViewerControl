@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,11 @@ namespace PropertyViewerControl
         }
 
         #region Dependency Properties
+
+        public static readonly DependencyProperty RowsProperty = DependencyProperty.Register(
+            "Rows", typeof(ObservableCollection<Row>), typeof(PropertyViewer), new PropertyMetadata(new ObservableCollection<Row>()));
+
+        public ObservableCollection<Row> Rows => (ObservableCollection<Row>)GetValue(RowsProperty);
 
         public static readonly DependencyProperty PropertyAnalyzerProperty = DependencyProperty.Register(
             "PropertyAnalyzer", typeof(IPropertyAnalyzer), typeof(PropertyViewer), new PropertyMetadata(new DefaultPropertyAnalyzer(), (_, args) =>
@@ -44,52 +50,47 @@ namespace PropertyViewerControl
             ((PropertyViewer)d).UpdateViewFromObjectSource();
         }
 
-
-        public static readonly DependencyProperty HeaderPropertyNameProperty = DependencyProperty.Register(
-            "HeaderPropertyName", typeof(object), typeof(PropertyViewer), new PropertyMetadata("Property"));
-
-        public object HeaderPropertyName
-        {
-            get => GetValue(HeaderPropertyNameProperty);
-            set => SetValue(HeaderPropertyNameProperty, value);
-        }
-
-        public static readonly DependencyProperty HeaderPropertyValueProperty = DependencyProperty.Register(
-            "HeaderPropertyValue", typeof(object), typeof(PropertyViewer), new PropertyMetadata("Value"));
-
-        public object HeaderPropertyValue
-        {
-            get => GetValue(HeaderPropertyValueProperty);
-            set => SetValue(HeaderPropertyValueProperty, value);
-        }
-
         #endregion
 
-        private Panel? _rowsContainer;
-
         protected GridSplitter? _gridSplitter;
-        protected ColumnDefinition? _nameColumnDefinition;
-        protected ColumnDefinition? _valueColumnDefinition;
         protected ColumnDefinition? _gridSplitterColumnDefinition;
 
-        public IEnumerable<PropertyViewerRow> Rows
+        public PropertyViewer()
         {
-            get
+            HeaderRow = new HeaderRow
             {
-                if (_rowsContainer == null)
-                    yield break;
+                PropertyViewer = this
+            };
 
-                foreach (var child in _rowsContainer.Children)
-                {
-                    if (child is PropertyViewerRow row)
-                        yield return row;
-                }
-            }
+            Loaded += OnLoaded;
+
+            NameColumn = new Column();
+            ValueColumn = new Column();
         }
+
+        public static readonly DependencyProperty HeaderRowProperty = DependencyProperty.Register(
+            "HeaderRow", typeof(HeaderRow), typeof(PropertyViewer), new PropertyMetadata(default(HeaderRow)));
+
+        public HeaderRow HeaderRow
+        {
+            get => (HeaderRow)GetValue(HeaderRowProperty);
+            private init => SetValue(HeaderRowProperty, value);
+        }
+
+        public Column NameColumn { get; }
+
+        public Column ValueColumn { get; }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnLoaded;
+            UpdateViewFromObjectSource();
+
+        }
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _rowsContainer = this.GetTemplateChild("PART_RowsContainer") as Panel;
 
             if (_gridSplitter != null)
                 _gridSplitter.MouseDoubleClick -= OnGridSplitterMouseDoubleClick;
@@ -99,11 +100,8 @@ namespace PropertyViewerControl
             if (_gridSplitter != null)
                 _gridSplitter.MouseDoubleClick += OnGridSplitterMouseDoubleClick;
 
-            _nameColumnDefinition = this.GetTemplateChild("PART_PropertyNameColumn") as ColumnDefinition;
             _gridSplitterColumnDefinition = this.GetTemplateChild("PART_GridSplitterColumn") as ColumnDefinition;
-            _valueColumnDefinition = this.GetTemplateChild("PART_PropertyValueColumn") as ColumnDefinition;
 
-            UpdateViewFromObjectSource();
         }
 
         private void OnGridSplitterMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -113,12 +111,9 @@ namespace PropertyViewerControl
 
         private void AutoSizeNameColumn()
         {
-            var nameColumnDefinition = _nameColumnDefinition;
-            if (nameColumnDefinition == null)
-                return;
             var width = 0d; //TODO: tenir compte de la cellule des headers
 
-            var remainingRows = new List<PropertyViewerRow>();
+            var remainingRows = new List<Row>();
             remainingRows.AddRange(Rows);
 
             while (remainingRows.Count > 0)
@@ -129,28 +124,27 @@ namespace PropertyViewerControl
                 if (row.IsExpanded)
                     remainingRows.AddRange(row.Children);
 
-                var nameCell = row.PropertyViewerNameCell;
-                if (nameCell == null)
-                    continue;
+                var nameCell = row.NameCell;
+
                 nameCell.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 width = Math.Max(nameCell.DesiredSize.Width, width);
             }
 
-            nameColumnDefinition.Width = new GridLength(width);
+            NameColumn.Width = new GridLength(width);
         }
 
-        public PropertyViewerRow GetRowForProperty(IProperty property, int level)
+        public Row GetRowForProperty(IProperty property, int level)
         {
-            return new(this, property, level);
+            return new(this, level)
+            {
+                BoundProperty = property
+            };
         }
 
         private void UpdateViewFromObjectSource()
         {
-            var rowsContainer = _rowsContainer;
-            if (rowsContainer == null)
-                return;
+            Rows.Clear();
 
-            rowsContainer.Children.Clear();
 
             var srcObj = ObjectSource;
             var propertyAnalyzer = PropertyAnalyzer;
@@ -162,7 +156,7 @@ namespace PropertyViewerControl
 
             foreach (var row in rootRows)
             {
-                rowsContainer.Children.Add(row);
+                Rows.Add(row);
             }
         }
 
