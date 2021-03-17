@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using PropertyViewerControl.PropertyAnalysis;
+using PropertyViewerControl.Rows;
 
 namespace PropertyViewerControl
 {
@@ -52,20 +52,17 @@ namespace PropertyViewerControl
 
         #endregion
 
-        protected GridSplitter? _gridSplitter;
-        protected ColumnDefinition? _gridSplitterColumnDefinition;
-
         public PropertyViewer()
         {
-            HeaderRow = new HeaderRow
-            {
-                PropertyViewer = this
-            };
+            HeaderRow = new HeaderRow(this);
 
             Loaded += OnLoaded;
+        }
 
-            NameColumn = new Column();
-            ValueColumn = new Column();
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            this.Loaded -= OnLoaded;
+            AutoSizeNameColumn();
         }
 
         public static readonly DependencyProperty HeaderRowProperty = DependencyProperty.Register(
@@ -77,41 +74,40 @@ namespace PropertyViewerControl
             private init => SetValue(HeaderRowProperty, value);
         }
 
-        public Column NameColumn { get; }
+        public static readonly DependencyProperty NameColumnProperty = DependencyProperty.Register(
+            "NameColumn", typeof(Column), typeof(PropertyViewer), new PropertyMetadata(default(Column?), (o, args) =>
+            {
 
-        public Column ValueColumn { get; }
+            }));
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        public Column? NameColumn
         {
-            Loaded -= OnLoaded;
-            UpdateViewFromObjectSource();
-
+            get => (Column)GetValue(NameColumnProperty);
+            set => SetValue(NameColumnProperty, value);
         }
 
-        public override void OnApplyTemplate()
+        public static readonly DependencyProperty ValueColumnProperty = DependencyProperty.Register(
+            "ValueColumn", typeof(Column), typeof(PropertyViewer), new PropertyMetadata(default(Column?)));
+
+        public Column? ValueColumn
         {
-            base.OnApplyTemplate();
-
-            if (_gridSplitter != null)
-                _gridSplitter.MouseDoubleClick -= OnGridSplitterMouseDoubleClick;
-
-            _gridSplitter = this.GetTemplateChild("PART_GridSplitter") as GridSplitter;
-
-            if (_gridSplitter != null)
-                _gridSplitter.MouseDoubleClick += OnGridSplitterMouseDoubleClick;
-
-            _gridSplitterColumnDefinition = this.GetTemplateChild("PART_GridSplitterColumn") as ColumnDefinition;
-
+            get => (Column)GetValue(ValueColumnProperty);
+            set => SetValue(ValueColumnProperty, value);
         }
 
-        private void OnGridSplitterMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        public void AutoSizeNameColumn()
         {
-            AutoSizeNameColumn();
-        }
+            var nameColumn = NameColumn;
+            if (nameColumn == null)
+                return;
 
-        private void AutoSizeNameColumn()
-        {
-            var width = 0d; //TODO: tenir compte de la cellule des headers
+            static double GetBestCellWidth(UIElement cell)
+            {
+                cell.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                return cell.DesiredSize.Width;
+            }
+
+            var width = GetBestCellWidth(HeaderRow.NameHeaderCell);
 
             var remainingRows = new List<Row>();
             remainingRows.AddRange(Rows);
@@ -126,11 +122,10 @@ namespace PropertyViewerControl
 
                 var nameCell = row.NameCell;
 
-                nameCell.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                width = Math.Max(nameCell.DesiredSize.Width, width);
+                width = Math.Max(GetBestCellWidth(nameCell), width);
             }
 
-            NameColumn.Width = new GridLength(width);
+            nameColumn.Width = new GridLength(width);
         }
 
         public Row GetRowForProperty(IProperty property, int level)
@@ -145,7 +140,6 @@ namespace PropertyViewerControl
         {
             Rows.Clear();
 
-
             var srcObj = ObjectSource;
             var propertyAnalyzer = PropertyAnalyzer;
 
@@ -158,6 +152,8 @@ namespace PropertyViewerControl
             {
                 Rows.Add(row);
             }
+
+            AutoSizeNameColumn();
         }
 
     }

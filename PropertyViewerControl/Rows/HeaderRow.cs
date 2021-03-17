@@ -1,10 +1,9 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using PropertyViewerControl.Cells;
 
-namespace PropertyViewerControl
+namespace PropertyViewerControl.Rows
 {
-    public class HeaderRow : Control
+    public class HeaderRow : RowBase
     {
         static HeaderRow()
         {
@@ -16,33 +15,23 @@ namespace PropertyViewerControl
 
         public NameHeaderCell NameHeaderCell
         {
-            get => (NameHeaderCell) GetValue(NameHeaderCellProperty);
+            get => (NameHeaderCell)GetValue(NameHeaderCellProperty);
             private init => SetValue(NameHeaderCellProperty, value);
         }
-
 
         public static readonly DependencyProperty ValueHeaderCellProperty = DependencyProperty.Register(
             "ValueHeaderCell", typeof(ValueHeaderCell), typeof(HeaderRow), new PropertyMetadata(default(ValueHeaderCell)));
 
         public ValueHeaderCell ValueHeaderCell
         {
-            get => (ValueHeaderCell) GetValue(ValueHeaderCellProperty);
+            get => (ValueHeaderCell)GetValue(ValueHeaderCellProperty);
             private init => SetValue(ValueHeaderCellProperty, value);
         }
 
-        public static readonly DependencyProperty PropertyViewerProperty = DependencyProperty.Register(
-            "PropertyViewer", typeof(PropertyViewer), typeof(HeaderRow), new PropertyMetadata(default(PropertyViewer)));
-
-        public PropertyViewer PropertyViewer
+        public HeaderRow(PropertyViewer propertyViewer) : base(propertyViewer)
         {
-            get => (PropertyViewer) GetValue(PropertyViewerProperty);
-            set => SetValue(PropertyViewerProperty, value);
-        }
-
-        public HeaderRow()
-        {
-            NameHeaderCell = new NameHeaderCell();
-            ValueHeaderCell = new ValueHeaderCell();
+            NameHeaderCell = new NameHeaderCell(propertyViewer);
+            ValueHeaderCell = new ValueHeaderCell(propertyViewer);
         }
 
     }

@@ -1,22 +1,19 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace PropertyViewerControl
 {
-    public class Column : DependencyObject
+    public class Column : ColumnDefinition
     {
 
-        public static readonly DependencyProperty WidthProperty = DependencyProperty.Register(
-            "Width", typeof(GridLength), typeof(Column), new PropertyMetadata(default(GridLength), (o, args) =>
-            {
+        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(
+            "Header", typeof(object), typeof(Column), new PropertyMetadata(default(object)));
 
-            }));
-
-        public GridLength Width
+        public object Header
         {
-            get => (GridLength)GetValue(WidthProperty);
-            set => SetValue(WidthProperty, value);
+            get => GetValue(HeaderProperty);
+            set => SetValue(HeaderProperty, value);
         }
-
 
     }
 }

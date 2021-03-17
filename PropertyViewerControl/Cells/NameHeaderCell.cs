@@ -10,9 +10,9 @@ namespace PropertyViewerControl.Cells
         }
 
 
-        public NameHeaderCell()
+        public NameHeaderCell(PropertyViewer propertyViewer) : base(propertyViewer)
         {
-            this.DataContext = "Name";
+            this.Content = "Name";
         }
 
     }

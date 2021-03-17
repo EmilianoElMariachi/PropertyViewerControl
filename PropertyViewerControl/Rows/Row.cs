@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using PropertyViewerControl.Cells;
 using PropertyViewerControl.PropertyAnalysis;
 
-namespace PropertyViewerControl
+namespace PropertyViewerControl.Rows
 {
-    public class Row : Control
+    public class Row : RowBase
     {
         static Row()
         {
@@ -21,7 +19,7 @@ namespace PropertyViewerControl
         public int Level
         {
             get => (int)GetValue(LevelProperty);
-            private set => SetValue(LevelProperty, value);
+            private init => SetValue(LevelProperty, value);
         }
 
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register(
@@ -42,22 +40,12 @@ namespace PropertyViewerControl
             private set => SetValue(HasChildrenProperty, value);
         }
 
-        public static readonly DependencyProperty PropertyViewerProperty = DependencyProperty.Register(
-            "PropertyViewer", typeof(PropertyViewer), typeof(Row), new PropertyMetadata(default(PropertyViewer)));
-
-        public PropertyViewer PropertyViewer
-        {
-            get => (PropertyViewer)GetValue(PropertyViewerProperty);
-            private set => SetValue(PropertyViewerProperty, value);
-        }
-
-
         public static readonly DependencyProperty NameCellProperty = DependencyProperty.Register(
             "NameCell", typeof(NameCell), typeof(Row), new PropertyMetadata(default(NameCell)));
 
         public NameCell NameCell
         {
-            get => (NameCell) GetValue(NameCellProperty);
+            get => (NameCell)GetValue(NameCellProperty);
             private init => SetValue(NameCellProperty, value);
         }
 
@@ -67,7 +55,7 @@ namespace PropertyViewerControl
 
         public ValueCell ValueCell
         {
-            get => (ValueCell) GetValue(ValueCellProperty);
+            get => (ValueCell)GetValue(ValueCellProperty);
             private init => SetValue(ValueCellProperty, value);
         }
 
@@ -87,11 +75,10 @@ namespace PropertyViewerControl
         }
 
 
-        public Row(PropertyViewer propertyViewer, int level)
+        public Row(PropertyViewer propertyViewer, int level) : base(propertyViewer)
         {
-            PropertyViewer = propertyViewer ?? throw new ArgumentNullException(nameof(propertyViewer));
-            NameCell = new NameCell();
-            ValueCell = new ValueCell();
+            NameCell = new NameCell(propertyViewer);
+            ValueCell = new ValueCell(propertyViewer);
 
             Level = level;
         }
@@ -106,8 +93,8 @@ namespace PropertyViewerControl
         {
             var boundProperty = BoundProperty;
 
-            NameCell.DataContext = boundProperty?.Name;
-            ValueCell.DataContext = boundProperty?.Value;
+            NameCell.Content = boundProperty?.Name;
+            ValueCell.Content = boundProperty?.Value;
 
             Children.Clear();
 

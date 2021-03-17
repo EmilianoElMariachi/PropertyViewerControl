@@ -8,5 +8,9 @@ namespace PropertyViewerControl.Cells
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ValueCell), new FrameworkPropertyMetadata(typeof(ValueCell)));
         }
+
+        public ValueCell(PropertyViewer propertyViewer) : base(propertyViewer)
+        {
+        }
     }
 }

@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:pvc="clr-namespace:PropertyViewerControl"
     xmlns:cells="clr-namespace:PropertyViewerControl.Cells"
-    xmlns:converters="clr-namespace:PropertyViewerControl.Converters">
+    xmlns:converters="clr-namespace:PropertyViewerControl.Converters"
+    xmlns:rows="clr-namespace:PropertyViewerControl.Rows">
 
     <converters:LevelToMarginConverter x:Key="LevelToMarginConverter" />
 
@@ -46,9 +47,10 @@
     </Style>
 
     <Style x:Key="NameValueGridSplitter" TargetType="GridSplitter">
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="Margin" Value="1,0" />
         <Setter Property="Background" Value="DarkGray" />
+        <Setter Property="ResizeDirection" Value="Columns" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="GridSplitter">
@@ -62,22 +64,23 @@
 
     <!-- PropertyViewer -->
     <Style TargetType="pvc:PropertyViewer">
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="pvc:PropertyViewer">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            Margin="{TemplateBinding Margin}">
                         <StackPanel>
 
-                            <ContentControl  x:Name="HeaderValue" Content="{TemplateBinding HeaderRow}"/>
+                            <!-- The Header Row -->
+                            <ContentControl Content="{TemplateBinding HeaderRow}"/>
 
-                            <!-- The rows container -->
+                            <!-- The Rows Container -->
                             <ItemsControl ItemsSource="{TemplateBinding Rows}" />
 
                         </StackPanel>
-
 
                     </Border>
                 </ControlTemplate>
@@ -86,22 +89,27 @@
     </Style>
 
     <!-- HeaderRow -->
-    <Style TargetType="pvc:HeaderRow">
-
+    <Style TargetType="rows:HeaderRow">
+        <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="pvc:HeaderRow">
+                <ControlTemplate TargetType="rows:HeaderRow">
                     <!-- Grid for the header -->
-                    <Grid x:Name="HeaderGrid" Height="30" Background="Green" >
-
+                    <Grid>
+                        <Grid.Background>
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="White" Offset="0"></GradientStop>
+                                <GradientStop Color="#E1E1E1" Offset="1"></GradientStop>
+                            </LinearGradientBrush>
+                        </Grid.Background>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition x:Name="PART_PropertyNameColumn" Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.NameColumn.Width}"/>
-                            <ColumnDefinition x:Name="PART_GridSplitterColumn" Width="Auto" />
-                            <ColumnDefinition x:Name="PART_PropertyValueColumn" Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.ValueColumn.Width}" />
+                            <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.NameColumn.Width, FallbackValue=Auto, Mode=TwoWay}" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.ValueColumn.Width, FallbackValue=*, Mode=TwoWay}" />
                         </Grid.ColumnDefinitions>
 
                         <!-- Cell for the Header Property Name -->
-                        <ContentControl Content="{TemplateBinding NameHeaderCell}" Grid.Column="0"  />
+                        <ContentControl Content="{TemplateBinding NameHeaderCell}" Grid.Column="0" />
 
                         <!-- Grid Splitter -->
                         <GridSplitter x:Name="PART_GridSplitter" Grid.Column="1" Style="{StaticResource NameValueGridSplitter}" />
@@ -115,37 +123,58 @@
         </Setter>
     </Style>
 
-    <!-- NameHeaderCell -->
-    <Style TargetType="cells:NameHeaderCell">
+    <!-- CellBase -->
+    <Style TargetType="cells:CellBase">
+
+    </Style>
+
+    <!-- HeaderCellBase -->
+    <Style TargetType="cells:HeaderCellBase" BasedOn="{StaticResource {x:Type cells:CellBase}}">
+        <Setter Property="Content" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.NameColumn.Header, FallbackValue=Name}" />
+        <Setter Property="Margin" Value="2" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="cells:NameHeaderCell">
-                    <ContentControl Content="{Binding}"/>
+                <ControlTemplate TargetType="cells:CellBase">
+                    <Border BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}">
+
+                        <ContentPresenter />
+
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+    <!-- NameHeaderCell -->
+    <Style TargetType="cells:NameHeaderCell" BasedOn="{StaticResource {x:Type cells:HeaderCellBase}}">
+    </Style>
+
+    <!-- ValueHeaderCell -->
+    <Style TargetType="cells:ValueHeaderCell" BasedOn="{StaticResource {x:Type cells:HeaderCellBase}}">
+    </Style>
+
     <!-- Row -->
-    <Style TargetType="pvc:Row">
+    <Style TargetType="rows:Row">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="pvc:Row">
+                <ControlTemplate TargetType="rows:Row">
 
                     <StackPanel>
-                        <Grid Background="Red">
+                        <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource AncestorType=pvc:PropertyViewer}, Path=NameColumn.Width}" />
-                                <ColumnDefinition Width="{Binding Path=ActualWidth, Mode=OneWay, ElementName=PART_GridSplitterColumn}" />
-                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.ValueColumn.Width}" />
+                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.NameColumn.Width, FallbackValue=Auto, Mode=TwoWay}" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.ValueColumn.Width, FallbackValue=*, Mode=TwoWay}" />
                             </Grid.ColumnDefinitions>
 
-                            <ContentControl Content="{TemplateBinding NameCell}" Grid.Column="0" />
+                            <ContentControl Content="{TemplateBinding NameCell}" Grid.Column="0"/>
 
                             <!-- Grid Splitter -->
                             <GridSplitter x:Name="PART_GridSplitter" Grid.Column="1" Style="{StaticResource NameValueGridSplitter}" />
 
-                            <ContentControl Content="{TemplateBinding ValueCell}" Grid.Column="2" />
+                            <ContentControl Content="{TemplateBinding ValueCell}" Grid.Column="2"/>
                         </Grid>
 
                         <!-- The rows container -->
@@ -165,23 +194,23 @@
     </Style>
 
     <!-- NameCell -->
-    <Style TargetType="cells:NameCell">
+    <Style TargetType="cells:NameCell" BasedOn="{StaticResource {x:Type cells:CellBase}}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="cells:NameCell">
                     <StackPanel Orientation="Horizontal" 
-                                Margin="{Binding RelativeSource={RelativeSource AncestorType=pvc:Row}, Path=Level, Converter={StaticResource LevelToMarginConverter}}">
+                                Margin="{Binding RelativeSource={RelativeSource AncestorType=rows:Row}, Path=Level, Converter={StaticResource LevelToMarginConverter}}">
 
                         <ToggleButton x:Name="ToggleButton" 
                                       Style="{StaticResource ChildrenToggleButton}"
-                                      IsChecked="{Binding RelativeSource={RelativeSource AncestorType=pvc:Row}, Path=IsExpanded}" VerticalAlignment="Center" />
+                                      IsChecked="{Binding RelativeSource={RelativeSource AncestorType=rows:Row}, Path=IsExpanded}" VerticalAlignment="Center" />
 
-                        <ContentControl Content="{Binding}" VerticalAlignment="Center" />
+                        <ContentPresenter  VerticalAlignment="Center"/>
 
                     </StackPanel>
 
                     <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=pvc:Row}, Path=HasChildren}" Value="False">
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=rows:Row}, Path=HasChildren}" Value="False">
                             <Setter TargetName="ToggleButton" Property="Visibility" Value="Hidden" />
                         </DataTrigger>
                     </ControlTemplate.Triggers>
@@ -192,11 +221,13 @@
     </Style>
 
     <!-- ValueCell -->
-    <Style TargetType="cells:ValueCell">
+    <Style TargetType="cells:ValueCell" BasedOn="{StaticResource {x:Type cells:CellBase}}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="cells:ValueCell">
-                    <ContentControl Content="{Binding}" VerticalAlignment="Center"/>
+
+                    <ContentPresenter VerticalAlignment="Center"/>
+
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

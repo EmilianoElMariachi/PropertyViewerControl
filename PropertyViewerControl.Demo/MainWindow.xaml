@@ -8,8 +8,16 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <StackPanel>
-            <pvc:PropertyViewer x:Name="PropertyViewer" />
+        <StackPanel Grid.IsSharedSizeScope="True">
+            <pvc:PropertyViewer x:Name="PropertyViewer">
+                <pvc:PropertyViewer.NameColumn>
+                    <pvc:Column Header="Name" Width="*" />
+                </pvc:PropertyViewer.NameColumn>
+
+                <pvc:PropertyViewer.ValueColumn>
+                    <pvc:Column Header="Value" Width="*" />
+                </pvc:PropertyViewer.ValueColumn>
+            </pvc:PropertyViewer>
             <DataGrid x:Name="DataGrid">
                 <DataGrid.Columns>
                     <DataGridTextColumn />
@@ -20,30 +28,62 @@
                 <system:String>a</system:String>
                 <system:String>a</system:String>
             </TreeView>
-        </StackPanel>
-        <!--<treeGridViewDemo:TreeGrid x:Name="TreeGrid" AutoGenerateColumns="False">
-            <treeGridViewDemo:TreeGrid.ItemContainerStyle>
-                <Style TargetType="treeGridViewDemo:TreeGridRow">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="treeGridViewDemo:TreeGridRow">
-                                <Grid Margin="{TemplateBinding LevelMargin}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Expander Grid.Column="0" />
-                                    <DataGridCellsPresenter  Grid.Column="1" ></DataGridCellsPresenter>
-                                </Grid>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </treeGridViewDemo:TreeGrid.ItemContainerStyle>
 
-            <treeGridViewDemo:TreeGrid.Columns>
-                <DataGridTextColumn></DataGridTextColumn>
-            </treeGridViewDemo:TreeGrid.Columns>
-        </treeGridViewDemo:TreeGrid>-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Name="C1" Width="Auto" />
+                    <ColumnDefinition x:Name="C2" Width="Auto"/>
+                    <ColumnDefinition x:Name="C3" Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Hello" />
+                <GridSplitter Grid.Column="1" Width="5" ResizeDirection="Columns" />
+                <TextBlock Grid.Column="2" />
+            </Grid>     
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{Binding ElementName=C1, Path=Width, Mode=OneWay}" />
+                    <ColumnDefinition Width="{Binding ElementName=C2, Path=Width, Mode=OneWay}" />
+                    <ColumnDefinition Width="{Binding ElementName=C3, Path=Width, Mode=OneWay}" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Hey" />
+                <GridSplitter Grid.Column="1" Width="5" ResizeDirection="Columns" />
+                <TextBlock Grid.Column="2" />
+            </Grid>
+
+            <Grid Background="Yellow">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="3"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Text="50" Grid.Column="0"></TextBlock>
+                <GridSplitter Grid.Column="1"
+                              HorizontalAlignment="Center"
+                              Width="3" VerticalAlignment="Stretch" Background="Red" ResizeDirection="Columns" />
+                <TextBox Background="LightBlue" Grid.Column="2">some text</TextBox>
+                <TextBlock Text="50" Grid.Column="0" Grid.Row="1">sdfsdfsdfsdf</TextBlock>
+            </Grid>
+
+            <Grid Height="200" Background="PaleVioletRed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Rectangle Grid.Column="0" Fill="Silver"></Rectangle>
+                <GridSplitter Grid.Column="1" Width="3" Background="Green" VerticalAlignment="Stretch" ResizeDirection="Columns" HorizontalAlignment="Center"></GridSplitter>
+                <Rectangle Grid.Column="2"></Rectangle>
+            </Grid>
+
+        </StackPanel>
+
+
     </Grid>
 </Window>
