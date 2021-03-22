@@ -62,6 +62,16 @@
         </Setter>
     </Style>
 
+    <Style TargetType="cells:NameProbeCell">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="cells:NameProbeCell">
+                    <Border Background="Orange"></Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- PropertyViewer -->
     <Style TargetType="pvc:PropertyViewer">
         <Setter Property="Template">
@@ -72,15 +82,35 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Padding="{TemplateBinding Padding}"
                             Margin="{TemplateBinding Margin}">
-                        <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=NameColumn.Width, FallbackValue=Auto, Mode=OneWayToSource}" />
+                                <ColumnDefinition Width="3" />
+                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ValueColumn.Width, FallbackValue=Auto, Mode=OneWayToSource}" />
+                            </Grid.ColumnDefinitions>
 
-                            <!-- The Header Row -->
-                            <ContentControl Content="{TemplateBinding HeaderRow}"/>
 
-                            <!-- The Rows Container -->
-                            <ItemsControl ItemsSource="{TemplateBinding Rows}" />
+                            <StackPanel Grid.Column="0" Grid.ColumnSpan="3">
 
-                        </StackPanel>
+                                <!-- The Header Row -->
+                                <ContentControl Content="{TemplateBinding HeaderRow}"/>
+
+                                <!-- The Rows Container -->
+                                <ItemsControl ItemsSource="{TemplateBinding Rows}" />
+
+                            </StackPanel>
+
+
+                            <!-- Grid Splitter -->
+                            <ContentControl Content="{TemplateBinding NameProbeCell}" Grid.Column="0" Height="30" />
+
+                            <GridSplitter x:Name="PART_GridSplitter" Grid.Column="1" Style="{StaticResource NameValueGridSplitter}" />
+
+                            <ContentControl Content="{TemplateBinding ValueProbeCell}" Grid.Column="2" />
+
+
+
+                        </Grid>
 
                     </Border>
                 </ControlTemplate>
@@ -103,16 +133,13 @@
                             </LinearGradientBrush>
                         </Grid.Background>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.NameColumn.Width, FallbackValue=Auto, Mode=TwoWay}" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.ValueColumn.Width, FallbackValue=*, Mode=TwoWay}" />
+                            <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.NameColumn.Width, FallbackValue=Auto, Mode=OneWay}" />
+                            <ColumnDefinition Width="3" />
+                            <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.ValueColumn.Width, FallbackValue=*, Mode=OneWay}" />
                         </Grid.ColumnDefinitions>
 
                         <!-- Cell for the Header Property Name -->
                         <ContentControl Content="{TemplateBinding NameHeaderCell}" Grid.Column="0" />
-
-                        <!-- Grid Splitter -->
-                        <GridSplitter x:Name="PART_GridSplitter" Grid.Column="1" Style="{StaticResource NameValueGridSplitter}" />
 
                         <!-- Cell for the Header Property Value -->
                         <ContentControl Content="{TemplateBinding ValueHeaderCell}" Grid.Column="2" />
@@ -164,15 +191,12 @@
                     <StackPanel>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.NameColumn.Width, FallbackValue=Auto, Mode=TwoWay}" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.ValueColumn.Width, FallbackValue=*, Mode=TwoWay}" />
+                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.NameColumn.Width, FallbackValue=Auto, Mode=OneWay}" />
+                                <ColumnDefinition Width="3" />
+                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=PropertyViewer.ValueColumn.Width, FallbackValue=*, Mode=OneWay}" />
                             </Grid.ColumnDefinitions>
 
                             <ContentControl Content="{TemplateBinding NameCell}" Grid.Column="0"/>
-
-                            <!-- Grid Splitter -->
-                            <GridSplitter x:Name="PART_GridSplitter" Grid.Column="1" Style="{StaticResource NameValueGridSplitter}" />
 
                             <ContentControl Content="{TemplateBinding ValueCell}" Grid.Column="2"/>
                         </Grid>

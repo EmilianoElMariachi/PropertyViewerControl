@@ -1,9 +1,8 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 
 namespace PropertyViewerControl
 {
-    public class Column : ColumnDefinition
+    public class Column : DependencyObject
     {
 
         public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(
@@ -13,6 +12,15 @@ namespace PropertyViewerControl
         {
             get => GetValue(HeaderProperty);
             set => SetValue(HeaderProperty, value);
+        }
+
+        public static readonly DependencyProperty WidthProperty = DependencyProperty.Register(
+            "Width", typeof(GridLength), typeof(Column), new PropertyMetadata(default(GridLength)));
+
+        public GridLength Width
+        {
+            get => (GridLength) GetValue(WidthProperty);
+            set => SetValue(WidthProperty, value);
         }
 
     }

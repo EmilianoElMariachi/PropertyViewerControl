@@ -5,8 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pvc="clr-namespace:PropertyViewerControl;assembly=PropertyViewerControl"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:pvc1="clr-namespace:PVC;assembly=PVC"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+
+    <Window.Resources>
+        <ResourceDictionary Source="Themes/Dictionary1.xaml" />
+    </Window.Resources>
+
     <Grid>
         <StackPanel Grid.IsSharedSizeScope="True">
             <pvc:PropertyViewer x:Name="PropertyViewer">
@@ -71,7 +77,7 @@
                 <TextBlock Text="50" Grid.Column="0" Grid.Row="1">sdfsdfsdfsdf</TextBlock>
             </Grid>
 
-            <Grid Height="200" Background="PaleVioletRed">
+            <Grid Height="20" Background="PaleVioletRed">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto" />
@@ -81,6 +87,14 @@
                 <GridSplitter Grid.Column="1" Width="3" Background="Green" VerticalAlignment="Stretch" ResizeDirection="Columns" HorizontalAlignment="Center"></GridSplitter>
                 <Rectangle Grid.Column="2"></Rectangle>
             </Grid>
+
+            <pvc1:PropertyEditor x:Name="PropertyEditor" Height="50">
+
+            </pvc1:PropertyEditor>
+
+
+            <DataGrid  Height="60">
+            </DataGrid>
 
         </StackPanel>
 

@@ -45,9 +45,11 @@ namespace PropertyViewerControl.Demo
 
             };
 
-            PropertyViewer.ObjectSource = items;
+            var strings = new[] { "ok", "PL", "okpok", "pokpok", " okpok", "pokpok" };
 
-            DataGrid.ItemsSource = new[] { "ok", "PL", "okpok", "pokpok", " okpok", "pokpok" };
+            PropertyViewer.ObjectSource = items;
+            DataGrid.ItemsSource = strings;
+            PropertyEditor.ItemsSource = strings;
         }
     }
 

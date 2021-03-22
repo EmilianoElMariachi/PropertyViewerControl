@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using PropertyViewerControl.Cells;
 using PropertyViewerControl.PropertyAnalysis;
 using PropertyViewerControl.Rows;
 
@@ -50,11 +51,31 @@ namespace PropertyViewerControl
             ((PropertyViewer)d).UpdateViewFromObjectSource();
         }
 
+        public static readonly DependencyProperty NameProbeCellProperty = DependencyProperty.Register(
+            "NameProbeCell", typeof(NameProbeCell), typeof(PropertyViewer), new PropertyMetadata(default(NameProbeCell)));
+
+        public NameProbeCell NameProbeCell
+        {
+            get => (NameProbeCell) GetValue(NameProbeCellProperty);
+            private init => SetValue(NameProbeCellProperty, value);
+        }  
+        
+        public static readonly DependencyProperty ValueProbeCellProperty = DependencyProperty.Register(
+            "ValueProbeCell", typeof(ValueProbeCell), typeof(PropertyViewer), new PropertyMetadata(default(ValueProbeCell)));
+
+        public ValueProbeCell ValueProbeCell
+        {
+            get => (ValueProbeCell) GetValue(ValueProbeCellProperty);
+            private init => SetValue(ValueProbeCellProperty, value);
+        }
+
         #endregion
 
         public PropertyViewer()
         {
             HeaderRow = new HeaderRow(this);
+            NameProbeCell = new NameProbeCell(this);
+            ValueProbeCell = new ValueProbeCell(this);
 
             Loaded += OnLoaded;
         }

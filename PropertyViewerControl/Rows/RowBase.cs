@@ -30,20 +30,21 @@ namespace PropertyViewerControl.Rows
         }
 
 
-        public override void OnApplyTemplate()
-        {
-            if (_gridSplitter != null)
-                _gridSplitter.MouseDoubleClick -= OnGridSplitterMouseDoubleClick;
+        //public override void OnApplyTemplate()
+        //{
+        //    //TODO: a déplacer
+        //    if (_gridSplitter != null)
+        //        _gridSplitter.MouseDoubleClick -= OnGridSplitterMouseDoubleClick;
 
-            _gridSplitter = this.GetTemplateChild("PART_GridSplitter") as GridSplitter;
+        //    _gridSplitter = this.GetTemplateChild("PART_GridSplitter") as GridSplitter;
 
-            if (_gridSplitter != null)
-                _gridSplitter.MouseDoubleClick += OnGridSplitterMouseDoubleClick;
-        }
+        //    if (_gridSplitter != null)
+        //        _gridSplitter.MouseDoubleClick += OnGridSplitterMouseDoubleClick;
+        //}
 
-        private void OnGridSplitterMouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            PropertyViewer.AutoSizeNameColumn();
-        }
+        //private void OnGridSplitterMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        //{
+        //    PropertyViewer.AutoSizeNameColumn();
+        //}
     }
 }
