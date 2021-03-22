@@ -34,28 +34,51 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>   
-    
+    </Style>
+
     <Style TargetType="{x:Type local:Row}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:Row}">
+                    <local:RowPanel />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:NameCell}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:NameCell}">
+
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
 
-                        <local:RowPanel>
 
-                            <local:RowPanel.NameCell>
-                                <TextBlock Text="Name" />
-                            </local:RowPanel.NameCell>
+                        <TextBox Text="Some Name"></TextBox> <!-- TODO faire le binding -->
 
-                            <local:RowPanel.ValueCell>
-                                <TextBlock Text="Value" />
-                            </local:RowPanel.ValueCell>
-
-                        </local:RowPanel>
                     </Border>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>   
+    
+    <Style TargetType="{x:Type local:ValueCell}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:ValueCell}">
+
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+
+
+                        <TextBox Text="Some Value!"></TextBox> <!-- TODO faire le binding -->
+
+                    </Border>
+
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

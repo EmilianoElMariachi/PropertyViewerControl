@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace PVC
@@ -6,39 +7,26 @@ namespace PVC
     public class RowPanel : Panel
     {
 
-        public static readonly DependencyProperty NameCellProperty = DependencyProperty.Register(
-            "NameCell", typeof(UIElement), typeof(RowPanel), new PropertyMetadata(default(UIElement)));
+        private Row? _row;
 
-        public UIElement NameCell
-        {
-            get => (UIElement) GetValue(NameCellProperty);
-            set => SetValue(NameCellProperty, value);
-        }
+        public NameCell NameCell { get; }
 
-        public static readonly DependencyProperty ValueCellProperty = DependencyProperty.Register(
-            "ValueCell", typeof(UIElement), typeof(RowPanel), new PropertyMetadata(default(UIElement)));
+        public ValueCell ValueCell { get; }
 
-        public UIElement ValueCell
-        {
-            get => (UIElement) GetValue(ValueCellProperty);
-            set => SetValue(ValueCellProperty, value);
-        }
 
-        private PropertyEditor? _propertyEditor;
-
-        public PropertyEditor? PropertyEditor
+        public Row? Row
         {
             get
             {
-                if (_propertyEditor != null)
-                    return _propertyEditor;
+                if (_row != null)
+                    return _row;
 
                 var templatedParentTmp = TemplatedParent;
                 while (templatedParentTmp != null)
                 {
-                    if (templatedParentTmp is PropertyEditor propertyEditor)
+                    if (templatedParentTmp is Row row)
                     {
-                        _propertyEditor = propertyEditor;
+                        _row = row;
                         break;
                     }
                     if (templatedParentTmp is FrameworkElement frameworkElement)
@@ -47,15 +35,34 @@ namespace PVC
                         break;
                 }
 
-                return _propertyEditor;
+                return _row;
             }
-
         }
+
+        public PropertyEditor? PropertyEditor => Row?.PropertyEditor;
+
+        public RowPanel()
+        {
+            NameCell = new NameCell(this);
+            ValueCell = new ValueCell(this);
+            this.Children.Add(NameCell);
+            this.Children.Add(ValueCell);
+        }
+
 
         // Override the default Measure method of Panel
         protected override Size MeasureOverride(Size availableSize)
         {
-            Size panelDesiredSize = new Size();
+            var propertyEditor = PropertyEditor;
+            if (propertyEditor == null)
+                return Size.Empty;
+
+            var minHeight = 0.0;
+            var minWidth = 0.0;
+
+
+            //propertyEditor.NameColumn.
+
 
             // In our example, we just have one child.
             // Report that our panel requires just the size of its only child.
@@ -63,20 +70,24 @@ namespace PVC
             {
 
                 child.Measure(availableSize);
-                panelDesiredSize = child.DesiredSize;
-            }
-            
+                var desiredSize = child.DesiredSize;
 
-            return panelDesiredSize;
+                minHeight = Math.Max(minHeight, desiredSize.Height);
+                minWidth += desiredSize.Height;
+            }
+
+
+            return new Size(minWidth, minHeight);
         }
         protected override Size ArrangeOverride(Size finalSize)
         {
+            var x = 0.0;
             foreach (UIElement child in InternalChildren)
             {
-                double x = 50;
-                double y = 50;
+                double y = 0;
 
                 child.Arrange(new Rect(new Point(x, y), child.DesiredSize));
+                x += child.DesiredSize.Width;
             }
             return finalSize; // Returns the final Arranged size
         }

@@ -51,8 +51,6 @@ namespace PVC
             NameColumn = new Column();
             SplitterColumn = new Column();
             ValueColumn = new Column();
-
-            //new DataGrid()
         }
 
         /// <summary>
@@ -71,7 +69,7 @@ namespace PVC
         /// <returns>A new DataGridRow.</returns>
         protected override DependencyObject GetContainerForItemOverride()
         {
-            return new Row();
+            return new Row(this);
         }
 
         /// <summary>
