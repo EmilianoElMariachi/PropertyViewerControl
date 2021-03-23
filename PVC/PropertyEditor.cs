@@ -13,7 +13,7 @@ namespace PVC
         }
 
         public static readonly DependencyProperty NameColumnProperty = DependencyProperty.Register(
-            "NameColumn", typeof(Column), typeof(PropertyEditor), new PropertyMetadata(default(Column), OnColumnChanged));
+            "NameColumn", typeof(NameColumn), typeof(PropertyEditor), new PropertyMetadata(default(NameColumn), OnColumnChanged));
 
         private static void OnColumnChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -21,9 +21,9 @@ namespace PVC
                 throw new ArgumentNullException(e.Property.Name);
         }
 
-        public Column NameColumn
+        public NameColumn NameColumn
         {
-            get => (Column) GetValue(NameColumnProperty);
+            get => (NameColumn) GetValue(NameColumnProperty);
             set => SetValue(NameColumnProperty, value);
         }
 
@@ -38,19 +38,19 @@ namespace PVC
         }
 
         public static readonly DependencyProperty ValueColumnProperty = DependencyProperty.Register(
-            "ValueColumn", typeof(Column), typeof(PropertyEditor), new PropertyMetadata(default(Column), OnColumnChanged));
+            "ValueColumn", typeof(ValueColumn), typeof(PropertyEditor), new PropertyMetadata(default(ValueColumn), OnColumnChanged));
 
-        public Column ValueColumn
+        public ValueColumn ValueColumn
         {
-            get => (Column) GetValue(ValueColumnProperty);
+            get => (ValueColumn) GetValue(ValueColumnProperty);
             set => SetValue(ValueColumnProperty, value);
         }
 
         public PropertyEditor()
         {
-            NameColumn = new Column();
-            SplitterColumn = new Column();
-            ValueColumn = new Column();
+            NameColumn = new NameColumn(this);
+            SplitterColumn = new Column(this);
+            ValueColumn = new ValueColumn(this);
         }
 
         /// <summary>

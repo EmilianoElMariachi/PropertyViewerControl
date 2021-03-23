@@ -9,7 +9,7 @@ namespace PVC
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NameCell), new FrameworkPropertyMetadata(typeof(NameCell)));
         }
 
-        public NameCell(RowPanel rowPanel) : base(rowPanel)
+        public NameCell(Row row) : base(row)
         {
         }
     }

@@ -6,18 +6,18 @@ namespace PVC
 {
     public class CellBase : Control
     {
-        public static readonly DependencyProperty AttachedPanelProperty = DependencyProperty.Register(
-            "AttachedPanel", typeof(RowPanel), typeof(CellBase), new PropertyMetadata(default(RowPanel)));
+        public static readonly DependencyProperty AttachedRowProperty = DependencyProperty.Register(
+            "AttachedRow", typeof(Row), typeof(CellBase), new PropertyMetadata(default(Row)));
 
-        public RowPanel AttachedPanel
+        public Row AttachedRow
         {
-            get => (RowPanel) GetValue(AttachedPanelProperty);
-            private init => SetValue(AttachedPanelProperty, value);
+            get => (Row) GetValue(AttachedRowProperty);
+            private init => SetValue(AttachedRowProperty, value);
         }
 
-        public CellBase(RowPanel rowPanel)
+        public CellBase(Row row)
         {
-            AttachedPanel = rowPanel ?? throw new ArgumentNullException(nameof(rowPanel));
+            AttachedRow = row ?? throw new ArgumentNullException(nameof(row));
         }
     }
 }

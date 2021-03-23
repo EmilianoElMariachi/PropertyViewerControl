@@ -88,7 +88,7 @@
                 <Rectangle Grid.Column="2"></Rectangle>
             </Grid>
 
-            <pvc1:PropertyEditor x:Name="PropertyEditor" Height="50">
+            <pvc1:PropertyEditor x:Name="PropertyEditor" >
 
             </pvc1:PropertyEditor>
 
