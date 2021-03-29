@@ -10,7 +10,7 @@
         <treeGridControl:TreeGrid  x:Name="MyTreeGrid" Background="LightGoldenrodYellow">
             <treeGridControl:TreeGrid.Columns>
 
-                <treeGridControl:Column Width="30">
+                <treeGridControl:Column Width="Auto">
                     <treeGridControl:Column.CellTemplate>
                         <DataTemplate>
                             <TextBox Text="Hello"></TextBox>

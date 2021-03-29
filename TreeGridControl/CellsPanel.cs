@@ -59,9 +59,9 @@ namespace TreeGridControl
 
             foreach (var cell in cells)
             {
-                
-                width += cell.Column.ActualWidth;
-                cell.Measure(availableSize);
+                var actualWidth = cell.Column.ActualWidth;
+                width += actualWidth;
+                cell.Measure(new Size(availableSize.Height, actualWidth));
                 height = Math.Max(height, cell.DesiredSize.Height);
             }
 
@@ -77,10 +77,23 @@ namespace TreeGridControl
             if (cells == null)
                 return finalSize;
 
+            var i = 0;
             foreach (var cell in cells)
             {
-                cell.Arrange(new Rect(x, 0, cell.Column.ActualWidth, finalSize.Height));
-                x += cell.Column.ActualWidth;
+                var columnActualWidth = cell.Column.ActualWidth;
+
+                var finalRect = new Rect(x, 0, columnActualWidth, finalSize.Height);
+
+                Trace.WriteLine($"C{i++}={finalRect}");
+
+                cell.Arrange(finalRect);
+
+                var cellRenderSize = cell.RenderSize;
+                if (finalRect.Size != cellRenderSize)
+                {
+
+                }
+                x += columnActualWidth;
             }
 
             Trace.WriteLine("Arranging cells of Row");
@@ -101,18 +114,8 @@ namespace TreeGridControl
             {
                 cell.Column.ActualWidthChanged += OnColumnActualWidthChanged;
                 cell.Column.InvalidateActualWidth();
-                //DependencyPropertyDescriptor
-                //    .FromProperty(Column.WidthProperty, typeof(Column))
-                //    .AddValueChanged(cell.Column, (s, e) =>
-                //    {
-                //        this.InvalidateMeasure();
-                //    });
-
-
-
                 this.Children.Add(cell);
             }
-
         }
 
         private void OnColumnActualWidthChanged(object? sender, ActualWidthChangedEventArg e)

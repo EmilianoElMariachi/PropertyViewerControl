@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace TreeGridControl
 {
@@ -12,12 +11,13 @@ namespace TreeGridControl
         public static readonly DependencyProperty CellTemplateProperty;
         private bool _actualWidthInvalidated = true;
         private double _actualWidth;
+        private bool _isUpdatingActualWidth;
 
         static Column()
         {
             CellTemplateProperty = DependencyProperty.Register("CellTemplate", typeof(DataTemplate), typeof(Column), new PropertyMetadata(default(DataTemplate)));
 
-            WidthProperty = DependencyProperty.Register("Width", typeof(double), typeof(Column), new PropertyMetadata(default(double), OnWidthPropertyChanged)
+            WidthProperty = DependencyProperty.Register("Width", typeof(GridLength), typeof(Column), new PropertyMetadata(default(GridLength), OnWidthPropertyChanged)
             {
                 CoerceValueCallback = CoerceWidthProperty,
             });
@@ -25,12 +25,17 @@ namespace TreeGridControl
 
         private static void OnWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((Column) d).InvalidateActualWidth();
+            ((Column)d).UpdateActualWidth();
         }
 
         private static object CoerceWidthProperty(DependencyObject d, object baseValue)
         {
-            return Math.Max((double)baseValue, 0d);
+            var baseGridLength = (GridLength)baseValue;
+
+            if (baseGridLength.Value >= 0)
+                return baseGridLength;
+
+            return new GridLength(0, baseGridLength.GridUnitType);
         }
 
         public double ActualWidth
@@ -39,10 +44,7 @@ namespace TreeGridControl
             {
                 if (_actualWidthInvalidated)
                 {
-                    var oldWidth = _actualWidth;
-                    _actualWidth = ComputeBestColumnWidth();
-                    NotifyActualWidthChanged(oldWidth, _actualWidth);
-                    _actualWidthInvalidated = false;
+                    UpdateActualWidth();
                 }
 
                 return _actualWidth;
@@ -50,6 +52,40 @@ namespace TreeGridControl
         }
 
         public event EventHandler<ActualWidthChangedEventArg>? ActualWidthChanged;
+
+
+        private void UpdateActualWidth()
+        {
+            try
+            {
+                _isUpdatingActualWidth = true;
+                _actualWidthInvalidated = false;
+
+                var oldWidth = _actualWidth;
+                double newWidth;
+                var width = Width;
+                if (width.GridUnitType == GridUnitType.Auto)
+                {
+                    newWidth = ComputeBestColumnWidth();
+                }
+                else if (width.GridUnitType == GridUnitType.Pixel)
+                {
+                    newWidth = width.Value;
+                }
+                else
+                {
+                    return; //TODO: à implémenter
+                }
+
+                _actualWidth = newWidth;
+                Trace.WriteLine($"New Column Width {TreeGrid?.Columns.IndexOf(this)}: {_actualWidth}");
+                NotifyActualWidthChanged(oldWidth, newWidth);
+            }
+            finally
+            {
+                _isUpdatingActualWidth = false;
+            }
+        }
 
         private double ComputeBestColumnWidth()
         {
@@ -73,9 +109,9 @@ namespace TreeGridControl
             return bestWidth;
         }
 
-        public double Width
+        public GridLength Width
         {
-            get => (double)GetValue(WidthProperty);
+            get => (GridLength)GetValue(WidthProperty);
             set => SetValue(WidthProperty, value);
         }
 
@@ -90,26 +126,18 @@ namespace TreeGridControl
 
         public void AutoSize()
         {
-
-            InvalidateActualWidth();
-            //Width = width;
-
-        }
-
-
-        public void UpdateWidth()
-        {
-            AutoSize();
+            this.Width = GridLength.Auto;
         }
 
         public void InvalidateActualWidth()
         {
-            _actualWidthInvalidated = true;
+            if (!_isUpdatingActualWidth)
+                _actualWidthInvalidated = true;
         }
 
         protected virtual void NotifyActualWidthChanged(double oldWidth, double newWidth)
         {
-            ActualWidthChanged?.Invoke(this, new ActualWidthChangedEventArg(oldWidth, newWidth));    
+            ActualWidthChanged?.Invoke(this, new ActualWidthChangedEventArg(oldWidth, newWidth));
         }
     }
 

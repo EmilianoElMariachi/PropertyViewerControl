@@ -38,7 +38,6 @@ namespace TreeGridControl
             "Content", typeof(object), typeof(Cell), new PropertyMetadata(default(object)));
 
         private Thumb? _gripper;
-        private double _initialDragColumnWidth;
 
         public object? Content
         {
@@ -72,7 +71,8 @@ namespace TreeGridControl
 
         private void OnGripperDoubleClicked(object sender, MouseButtonEventArgs e)
         {
-            this.Column.AutoSize();
+            Column.Width = new GridLength(20);
+            //Column.AutoSize();
         }
 
         private void OnColumnGripperDragCompleted(object sender, DragCompletedEventArgs e)
@@ -82,14 +82,11 @@ namespace TreeGridControl
 
         private void OnColumnResize(object sender, DragDeltaEventArgs e)
         {
-            Column.Width += e.HorizontalChange;
+            Column.Width = new GridLength(Column.Width.Value + e.HorizontalChange);
         }
 
         private void OnColumnGripperDragStarted(object sender, DragStartedEventArgs e)
         {
-            
-            _initialDragColumnWidth = Column.Width;
-            Trace.WriteLine("Start=" + _initialDragColumnWidth);
         }
 
         private void UnhookGripperEvents()
@@ -108,6 +105,7 @@ namespace TreeGridControl
         {
             base.OnChildDesiredSizeChanged(child);
             Column.InvalidateActualWidth();
+            Trace.WriteLine("On cell OnChildDesiredSizeChanged");
         }
     }
 }
