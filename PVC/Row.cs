@@ -1,77 +1,105 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace PVC
 {
     public class Row : Panel
     {
 
-        public NameCell NameCell { get; }
+        public static readonly DependencyProperty NameCellProperty = DependencyProperty.Register(
+            "NameCell", typeof(NameCell), typeof(Row), new PropertyMetadata(default(NameCell)));
 
-        public ValueCell ValueCell { get; }
+        public NameCell NameCell
+        {
+            get => (NameCell)GetValue(NameCellProperty);
+            private init => SetValue(NameCellProperty, value);
+        }
+
+        public static readonly DependencyProperty ValueCellProperty = DependencyProperty.Register(
+            "ValueCell", typeof(ValueCell), typeof(Row), new PropertyMetadata(default(ValueCell)));
+
+        public ValueCell ValueCell
+        {
+            get => (ValueCell)GetValue(ValueCellProperty);
+            private init => SetValue(ValueCellProperty, value);
+        }
+
+        public static readonly DependencyProperty CellProperty = DependencyProperty.Register(
+            "Cell", typeof(Cell), typeof(Row), new PropertyMetadata(default(Cell)));
+
+        public Cell SplitterCell
+        {
+            get => (Cell)GetValue(CellProperty);
+            private init => SetValue(CellProperty, value);
+        }
 
         public Row(PropertyEditor propertyEditor)
         {
             PropertyEditor = propertyEditor ?? throw new ArgumentNullException(nameof(propertyEditor));
-            NameCell = new NameCell(this);
-            ValueCell = new ValueCell(this);
-
-            //NameCell.SetBinding(NameCell.WidthProperty, new Binding(nameof(NameColumn.Width))
-            //{
-            //    Mode = BindingMode.OneWay,
-            //    Source = PropertyEditor.NameColumn
-            //});
-
-            //ValueCell.SetBinding(ValueCell.WidthProperty, new Binding(nameof(ValueColumn.Width))
-            //{
-            //    Mode = BindingMode.OneWay,
-            //    Source = PropertyEditor.ValueColumn
-            //});
-
+            NameCell = new NameCell(this, propertyEditor.NameColumn);
+            SplitterCell = new Cell(this, propertyEditor.SplitterColumn);
+            ValueCell = new ValueCell(this, propertyEditor.ValueColumn);
             this.Children.Add(NameCell);
+            this.Children.Add(SplitterCell);
             this.Children.Add(ValueCell);
+
+
+            propertyEditor.NameColumn.SizeChanged += OnSizeChanged;
+            propertyEditor.ValueColumn.SizeChanged += OnSizeChanged;
+            propertyEditor.SplitterColumn.SizeChanged += OnSizeChanged;
 
         }
 
-
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //this.InvalidateArrange();
+        }
 
         public PropertyEditor PropertyEditor { get; }
 
+        public IEnumerable<Cell> Cells => this.InternalChildren.OfType<Cell>();
 
-        // Override the default Measure method of Panel
+        public Cell? GetCell(Column column)
+        {
+            foreach (var cell in Cells)
+            {
+                if (cell.AttachedColumn == column)
+                    return cell;
+            }
+
+            return null;
+        }
+
         protected override Size MeasureOverride(Size availableSize)
         {
-            var propertyEditor = PropertyEditor;
+            var measureOverride = base.MeasureOverride(availableSize);
 
+            var width = 0.0;
+            var height = 0.0;
+            foreach (var cell in Cells)
+            {
+                width += cell.AttachedColumn.ActualWidth;
+                height = Math.Max(height, cell.DesiredSize.Height);
+            }
 
-            propertyEditor.NameColumn.UpdateWidth();
-            propertyEditor.ValueColumn.UpdateWidth();
-
-
-            var width = propertyEditor.NameColumn.Width + propertyEditor.SplitterColumn.Width + propertyEditor.ValueColumn.Width;
-
-            var desiredRowHeight = GetDesiredRowHeight();
-            return new Size(width, desiredRowHeight);
+            return new Size(width, height);
         }
+
         protected override Size ArrangeOverride(Size finalSize)
         {
+            var x = 0.0;
+            foreach (var cell in Cells)
+            {
+                cell.Arrange(new Rect(x, 0, cell.AttachedColumn.ActualWidth, cell.DesiredSize.Height));
+                x += cell.AttachedColumn.ActualWidth;
+            }
 
-            var propertyEditor = PropertyEditor;
-
-            NameCell.Arrange(new Rect(new Point(0, 0), new Size(propertyEditor.NameColumn.Width, NameCell.DesiredSize.Height)));
-
-            ValueCell.Arrange(new Rect(new Point(propertyEditor.NameColumn.Width + propertyEditor.SplitterColumn.Width, 0), new Size(propertyEditor.ValueColumn.Width, ValueCell.DesiredSize.Height)));
-
-            return finalSize; // Returns the final Arranged size
+            return finalSize;//Rect.Union(nameRect, valueRect).Size; // Returns the final Arranged size
         }
 
-        private double GetDesiredRowHeight()
-        {
-            //child.Measure(availableSize);
-            //var desiredSize = child.DesiredSize;
-            return Math.Max(NameCell.DesiredSize.Height, ValueCell.DesiredSize.Height);
-        }
+
     }
 }

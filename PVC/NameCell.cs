@@ -2,14 +2,14 @@
 
 namespace PVC
 {
-    public class NameCell : CellBase
+    public class NameCell : Cell
     {
         static NameCell()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NameCell), new FrameworkPropertyMetadata(typeof(NameCell)));
         }
 
-        public NameCell(Row row) : base(row)
+        public NameCell(Row row, Column attachedColumn) : base(row, attachedColumn)
         {
         }
     }

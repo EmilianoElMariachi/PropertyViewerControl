@@ -1,0 +1,32 @@
+﻿<Window x:Class="TreeGridControl.Demo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:treeGridControl="clr-namespace:TreeGridControl;assembly=TreeGridControl"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <treeGridControl:TreeGrid  x:Name="MyTreeGrid" Background="LightGoldenrodYellow">
+            <treeGridControl:TreeGrid.Columns>
+
+                <treeGridControl:Column Width="30">
+                    <treeGridControl:Column.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="Hello"></TextBox>
+                        </DataTemplate>
+                    </treeGridControl:Column.CellTemplate>
+                </treeGridControl:Column>
+
+                <treeGridControl:Column Width="70">
+                    <treeGridControl:Column.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="World"></TextBox>
+                        </DataTemplate>
+                    </treeGridControl:Column.CellTemplate>
+                </treeGridControl:Column>
+
+            </treeGridControl:TreeGrid.Columns>
+        </treeGridControl:TreeGrid>
+    </Grid>
+</Window>

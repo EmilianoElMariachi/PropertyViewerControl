@@ -1,105 +1,45 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 
 namespace PVC
 {
-    public class Column : DependencyObject
+
+    
+    public class Column : FrameworkElement
     {
         public PropertyEditor PropertyEditor { get; }
 
-        public static readonly DependencyProperty WidthProperty = DependencyProperty.Register(
-            "Width", typeof(double), typeof(Column), new PropertyMetadata(default(double)));
+        public static readonly DependencyProperty WidthDefProperty = DependencyProperty.Register(
+            "WidthDef", typeof(GridLength), typeof(Column), new PropertyMetadata(default(GridLength)));
 
-        public double Width
+        public GridLength WidthDef
         {
-            get => (double)GetValue(WidthProperty);
-            set => SetValue(WidthProperty, value);
+            get => (GridLength) GetValue(WidthDefProperty);
+            set => SetValue(WidthDefProperty, value);
         }
-
 
         public Column(PropertyEditor propertyEditor)
         {
             PropertyEditor = propertyEditor;
         }
 
-    }
-
-    public abstract class CellBaseColumn : Column
-    {
-        public CellBaseColumn(PropertyEditor propertyEditor) : base(propertyEditor)
+        protected override Size MeasureOverride(Size constraint)
         {
-        }
+            var desiredWidth = 0.0;
 
-
-
-        public void UpdateWidth()
-        {
-            Width = ComputeWidth();
-        }
-
-        private double ComputeWidth()
-        {
-            var generator = PropertyEditor.ItemContainerGenerator;
-
-            if (generator.Status != GeneratorStatus.ContainersGenerated)
-                return 0;
-
-            var width = 0.0;
-
-            foreach (var item in generator.Items)
+            foreach (var row in PropertyEditor.Rows)
             {
-                var containerFromItem = generator.ContainerFromItem(item);
-                if (!(containerFromItem is Row row))
+                var cell = row.GetCell(this);
+                if (cell == null)
                     continue;
 
-                //row.InvalidateArrange();
+                cell.Measure(constraint);
 
-                var cell = GetCell(row);
-
-                //var cell = row.NameCell;
-
-                //var childrenCount = VisualTreeHelper.GetChildrenCount(cell);
-                //if (childrenCount > 0)
-                //{
-                //    var dependencyObject = VisualTreeHelper.GetChild(cell, 0);
-                //}
-
-                cell.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-
-                width = Math.Max(width, cell.DesiredSize.Width);
+                desiredWidth = Math.Max(desiredWidth, cell.DesiredSize.Width);
             }
-
-            return width;
+            return new Size(desiredWidth, 1);
         }
 
-        protected abstract CellBase GetCell(Row row);
-    }
-
-
-    public class NameColumn : CellBaseColumn
-    {
-        public NameColumn(PropertyEditor propertyEditor) : base(propertyEditor)
-        {
-        }
-
-
-        protected override CellBase GetCell(Row row)
-        {
-            return row.NameCell;
-        }
-    }
-
-    public class ValueColumn : CellBaseColumn
-    {
-        public ValueColumn(PropertyEditor propertyEditor) : base(propertyEditor)
-        {
-        }
-
-        protected override CellBase GetCell(Row row)
-        {
-            return row.ValueCell;
-        }
     }
 
 }

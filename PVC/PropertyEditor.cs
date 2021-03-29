@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace PVC
 {
@@ -13,7 +15,7 @@ namespace PVC
         }
 
         public static readonly DependencyProperty NameColumnProperty = DependencyProperty.Register(
-            "NameColumn", typeof(NameColumn), typeof(PropertyEditor), new PropertyMetadata(default(NameColumn), OnColumnChanged));
+            "NameColumn", typeof(Column), typeof(PropertyEditor), new PropertyMetadata(default(Column), OnColumnChanged));
 
         private static void OnColumnChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -21,9 +23,9 @@ namespace PVC
                 throw new ArgumentNullException(e.Property.Name);
         }
 
-        public NameColumn NameColumn
+        public Column NameColumn
         {
-            get => (NameColumn) GetValue(NameColumnProperty);
+            get => (Column)GetValue(NameColumnProperty);
             set => SetValue(NameColumnProperty, value);
         }
 
@@ -33,24 +35,32 @@ namespace PVC
 
         public Column SplitterColumn
         {
-            get => (Column) GetValue(SplitterColumnProperty);
+            get => (Column)GetValue(SplitterColumnProperty);
             set => SetValue(SplitterColumnProperty, value);
         }
 
         public static readonly DependencyProperty ValueColumnProperty = DependencyProperty.Register(
-            "ValueColumn", typeof(ValueColumn), typeof(PropertyEditor), new PropertyMetadata(default(ValueColumn), OnColumnChanged));
+            "ValueColumn", typeof(Column), typeof(PropertyEditor), new PropertyMetadata(default(Column), OnColumnChanged));
 
-        public ValueColumn ValueColumn
+        public Column ValueColumn
         {
-            get => (ValueColumn) GetValue(ValueColumnProperty);
+            get => (Column)GetValue(ValueColumnProperty);
             set => SetValue(ValueColumnProperty, value);
         }
 
         public PropertyEditor()
         {
-            NameColumn = new NameColumn(this);
-            SplitterColumn = new Column(this);
-            ValueColumn = new ValueColumn(this);
+            NameColumn = new Column(this);
+            SplitterColumn = new Column(this)
+            {
+                Width = 3
+            };
+            ValueColumn = new Column(this);
+            //Loaded += (sender, args) =>
+            //{
+            //    NameColumn.InvalidateMeasure();
+            //    ValueColumn.InvalidateMeasure();
+            //};
         }
 
         /// <summary>
@@ -69,7 +79,29 @@ namespace PVC
         /// <returns>A new DataGridRow.</returns>
         protected override DependencyObject GetContainerForItemOverride()
         {
+            //this.NameColumn.InvalidateArrange();
+            //this.ValueColumn.InvalidateArrange();
             return new Row(this);
+        }
+
+        public IEnumerable<Row> Rows
+        {
+            get
+            {
+                var generator = this.ItemContainerGenerator;
+
+                if (generator.Status != GeneratorStatus.ContainersGenerated)
+                    yield break;
+
+                foreach (var item in generator.Items)
+                {
+                    var containerFromItem = generator.ContainerFromItem(item);
+                    var row = containerFromItem as Row;
+                    if (row == null)
+                        continue;
+                    yield return row;
+                }
+            }
         }
 
         /// <summary>
