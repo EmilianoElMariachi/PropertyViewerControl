@@ -6,7 +6,7 @@
         xmlns:treeGridControl="clr-namespace:TreeGridControl;assembly=TreeGridControl"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <StackPanel>
         <treeGridControl:TreeGrid  x:Name="MyTreeGrid" Background="LightGoldenrodYellow">
             <treeGridControl:TreeGrid.Columns>
 
@@ -18,7 +18,7 @@
                     </treeGridControl:Column.CellTemplate>
                 </treeGridControl:Column>
 
-                <treeGridControl:Column Width="70">
+                <treeGridControl:Column Width="Auto">
                     <treeGridControl:Column.CellTemplate>
                         <DataTemplate>
                             <TextBox Text="World"></TextBox>
@@ -28,5 +28,5 @@
 
             </treeGridControl:TreeGrid.Columns>
         </treeGridControl:TreeGrid>
-    </Grid>
+    </StackPanel>
 </Window>

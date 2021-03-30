@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -24,14 +25,6 @@ namespace TreeGridControl
         {
             Row = row ?? throw new ArgumentNullException(nameof(row));
             Column = column ?? throw new ArgumentNullException(nameof(column));
-
-
-            //this.SetBinding(WidthProperty, new Binding(nameof(Column.Width))
-            //{
-            //    Source = column,
-            //    Mode = BindingMode.OneWay
-            //});
-
         }
 
         public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(
@@ -44,7 +37,6 @@ namespace TreeGridControl
             get => GetValue(ContentProperty);
             set => SetValue(ContentProperty, value);
         }
-
 
         public override void OnApplyTemplate()
         {
@@ -60,9 +52,7 @@ namespace TreeGridControl
 
             if (_gripper != null)
             {
-                _gripper.DragStarted += OnColumnGripperDragStarted;
                 _gripper.DragDelta += OnColumnResize;
-                _gripper.DragCompleted += OnColumnGripperDragCompleted;
                 _gripper.MouseDoubleClick += OnGripperDoubleClicked;
                 //SetLeftGripperVisibility();
             }
@@ -71,41 +61,36 @@ namespace TreeGridControl
 
         private void OnGripperDoubleClicked(object sender, MouseButtonEventArgs e)
         {
-            Column.Width = new GridLength(20);
-            //Column.AutoSize();
+            Column.AutoSize();
         }
 
-        private void OnColumnGripperDragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            
-        }
 
         private void OnColumnResize(object sender, DragDeltaEventArgs e)
         {
-            Column.Width = new GridLength(Column.Width.Value + e.HorizontalChange);
+            Column.Width = new GridLength(Column.ActualWidth + e.HorizontalChange);
         }
 
-        private void OnColumnGripperDragStarted(object sender, DragStartedEventArgs e)
-        {
-        }
 
         private void UnhookGripperEvents()
         {
             if (_gripper != null)
             {
-                _gripper.DragStarted -= OnColumnGripperDragStarted;
                 _gripper.DragDelta -= OnColumnResize;
-                _gripper.DragCompleted -= OnColumnGripperDragCompleted;
                 _gripper.MouseDoubleClick -= OnGripperDoubleClicked;
                 _gripper = null;
             }
         }
 
+
+        /// <summary>
+        /// Method called when at least one of the children wants to change its size
+        /// </summary>
+        /// <param name="child"></param>
         protected override void OnChildDesiredSizeChanged(UIElement child)
         {
             base.OnChildDesiredSizeChanged(child);
             Column.InvalidateActualWidth();
-            Trace.WriteLine("On cell OnChildDesiredSizeChanged");
+            Debug.WriteLine($"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}");
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,7 +12,6 @@ namespace TreeGridControl
         public static readonly DependencyProperty CellsProperty = DependencyProperty.Register(
             "Cells", typeof(CellCollection), typeof(CellsPanel), new PropertyMetadata(default(CellCollection), OnCellsPropertyChanged));
 
-        private TreeGrid? _treeGrid;
         private Row? _row;
 
         private static void OnCellsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -54,20 +53,24 @@ namespace TreeGridControl
             if (cells == null)
                 return Size.Empty;
 
-            var width = 0.0;
-            var height = 0.0;
+            var desiredWidth = 0.0;
+            var desiredHeight = 0.0;
 
             foreach (var cell in cells)
             {
-                var actualWidth = cell.Column.ActualWidth;
-                width += actualWidth;
-                cell.Measure(new Size(availableSize.Height, actualWidth));
-                height = Math.Max(height, cell.DesiredSize.Height);
+                var colActualWidth = cell.Column.ActualWidth;
+                var availableWidth = (cell.Column.Width.GridUnitType == GridUnitType.Auto) ? double.PositiveInfinity : colActualWidth;
+
+                desiredWidth += colActualWidth;
+                cell.Measure(new Size(availableWidth, availableSize.Height));
+                desiredHeight = Math.Max(desiredHeight, cell.DesiredSize.Height);
             }
 
-            Trace.WriteLine("Measuring cells of Row");
+            var desiredSize = new Size(desiredWidth, desiredHeight);
 
-            return new Size(width, height);
+            Debug.WriteLine($"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}={desiredSize}");
+
+            return desiredSize;
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -77,30 +80,18 @@ namespace TreeGridControl
             if (cells == null)
                 return finalSize;
 
-            var i = 0;
             foreach (var cell in cells)
             {
                 var columnActualWidth = cell.Column.ActualWidth;
 
                 var finalRect = new Rect(x, 0, columnActualWidth, finalSize.Height);
-
-                Trace.WriteLine($"C{i++}={finalRect}");
-
                 cell.Arrange(finalRect);
 
-                var cellRenderSize = cell.RenderSize;
-                if (finalRect.Size != cellRenderSize)
-                {
-
-                }
                 x += columnActualWidth;
             }
 
-            Trace.WriteLine("Arranging cells of Row");
-
             return finalSize;
         }
-
 
         private void InitFromCells()
         {
@@ -118,9 +109,15 @@ namespace TreeGridControl
             }
         }
 
+        /// <summary>
+        /// This method is triggered when the <see cref="Column.ActualWidth"/> of one of the cell's column is changed.
+        /// In this case, we invalidate the panel to rearrange cells accordingly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnColumnActualWidthChanged(object? sender, ActualWidthChangedEventArg e)
         {
-            this.InvalidateArrange();
+            this.InvalidateMeasure();
         }
     }
 }

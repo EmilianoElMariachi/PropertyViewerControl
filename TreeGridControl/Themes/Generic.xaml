@@ -12,7 +12,6 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
 
-
                         <ItemsPresenter />
 
                     </Border>
@@ -42,8 +41,8 @@
 
 
     <Style x:Key="ColumnGripperStyle" TargetType="{x:Type Thumb}">
-        <Setter Property="Opacity" Value="0.5"></Setter>
-        <Setter Property="Background" Value="Yellow"/>
+        <Setter Property="Opacity" Value="0.8"></Setter>
+        <Setter Property="Background" Value="Green"/>
 
         <Setter Property="Width" Value="6"/>
         <Setter Property="Margin" Value="0,0,-3,0" />

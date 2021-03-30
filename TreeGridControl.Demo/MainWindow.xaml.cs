@@ -12,7 +12,6 @@ namespace TreeGridControl.Demo
         {
             InitializeComponent();
 
-
             var items = new ObservableCollection<IItem>
             {
                 new Item
@@ -43,5 +42,6 @@ namespace TreeGridControl.Demo
 
             MyTreeGrid.ItemsSource = items;
         }
+        
     }
 }

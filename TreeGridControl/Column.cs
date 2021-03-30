@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 
 namespace TreeGridControl
@@ -78,7 +79,9 @@ namespace TreeGridControl
                 }
 
                 _actualWidth = newWidth;
-                Trace.WriteLine($"New Column Width {TreeGrid?.Columns.IndexOf(this)}: {_actualWidth}");
+
+                Debug.WriteLine($"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}={_actualWidth}");
+
                 NotifyActualWidthChanged(oldWidth, newWidth);
             }
             finally
@@ -100,11 +103,11 @@ namespace TreeGridControl
                 if (cell == null)
                     continue;
 
-                //cell.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                cell.Measure(new Size(double.PositiveInfinity, cell.DesiredSize.Height));
                 bestWidth = Math.Max(bestWidth, cell.DesiredSize.Width);
             }
 
-            Trace.WriteLine("ComputeBestColumnWidth");
+            Debug.WriteLine($"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}={bestWidth}");
 
             return bestWidth;
         }
