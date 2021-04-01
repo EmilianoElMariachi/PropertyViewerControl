@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -81,16 +79,5 @@ namespace TreeGridControl
             }
         }
 
-
-        /// <summary>
-        /// Method called when at least one of the children wants to change its size
-        /// </summary>
-        /// <param name="child"></param>
-        protected override void OnChildDesiredSizeChanged(UIElement child)
-        {
-            base.OnChildDesiredSizeChanged(child);
-            Column.InvalidateActualWidth();
-            Debug.WriteLine($"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}");
-        }
     }
 }

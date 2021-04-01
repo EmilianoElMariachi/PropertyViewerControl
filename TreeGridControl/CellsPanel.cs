@@ -53,6 +53,8 @@ namespace TreeGridControl
             if (cells == null)
                 return Size.Empty;
 
+            TreeGrid?.Columns.ColumnWidthManager.Update();
+
             var desiredWidth = 0.0;
             var desiredHeight = 0.0;
 
@@ -104,7 +106,7 @@ namespace TreeGridControl
             foreach (var cell in cells)
             {
                 cell.Column.ActualWidthChanged += OnColumnActualWidthChanged;
-                cell.Column.InvalidateActualWidth();
+                cell.Column.TreeGrid?.Columns.ColumnWidthManager.Update();
                 this.Children.Add(cell);
             }
         }
