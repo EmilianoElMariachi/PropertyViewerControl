@@ -1,0 +1,35 @@
+﻿<Window x:Class="TreeGridView.Demo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TreeGridView.Demo"
+        xmlns:treeGridView="clr-namespace:TreeGridView;assembly=TreeGridView"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <StackPanel Background="DarkSalmon">
+            <treeGridView:TreeGrid  x:Name="MyTreeGrid" Background="LightGoldenrodYellow">
+                <treeGridView:TreeGrid.Columns>
+
+                    <treeGridView:Column Width="Auto">
+                        <treeGridView:Column.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="Hello"></TextBox>
+                            </DataTemplate>
+                        </treeGridView:Column.CellTemplate>
+                    </treeGridView:Column>
+
+                    <treeGridView:Column Width="*">
+                        <treeGridView:Column.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="World"></TextBox>
+                            </DataTemplate>
+                        </treeGridView:Column.CellTemplate>
+                    </treeGridView:Column>
+
+                </treeGridView:TreeGrid.Columns>
+            </treeGridView:TreeGrid>
+        </StackPanel>
+    </Grid>
+</Window>

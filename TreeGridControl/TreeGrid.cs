@@ -27,6 +27,13 @@ namespace TreeGridControl
             set => SetValue(ColumnsProperty, value);
         }
 
+        protected override Size MeasureOverride(Size constraint)
+        {
+         
+            this.Columns.ColumnWidthManager.Update(constraint);
+            return base.MeasureOverride(constraint);
+        }
+
         protected override DependencyObject GetContainerForItemOverride()
         {
             return new Row(this, null);

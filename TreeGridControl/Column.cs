@@ -22,7 +22,7 @@ namespace TreeGridControl
 
         private static void OnWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((Column)d).TreeGrid?.Columns.ColumnWidthManager.Update();
+            ((Column)d).TreeGrid?.InvalidateMeasure();
         }
 
         private static object CoerceWidthProperty(DependencyObject d, object baseValue)

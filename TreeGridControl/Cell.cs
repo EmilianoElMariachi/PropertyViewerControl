@@ -42,6 +42,12 @@ namespace TreeGridControl
             HookupGripperEvents();
         }
 
+        protected override Size MeasureOverride(Size constraint)
+        {
+            return base.MeasureOverride(constraint);
+        }
+
+
         private void HookupGripperEvents()
         {
             UnhookGripperEvents();
@@ -79,5 +85,9 @@ namespace TreeGridControl
             }
         }
 
+        protected override void OnChildDesiredSizeChanged(UIElement child)
+        {
+            base.OnChildDesiredSizeChanged(child);
+        }
     }
 }

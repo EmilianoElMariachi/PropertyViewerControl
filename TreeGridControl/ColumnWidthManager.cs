@@ -9,6 +9,7 @@ namespace TreeGridControl
 {
     public class ColumnWidthManager
     {
+        private bool _isUpdating;
         public ColumnCollection Columns { get; }
 
         public ColumnWidthManager(ColumnCollection columnCollection)
@@ -16,24 +17,45 @@ namespace TreeGridControl
             Columns = columnCollection ?? throw new ArgumentNullException(nameof(columnCollection));
         }
 
-        public void Update()
+        public void Update(Size constraint)
         {
-            var treeGrid = Columns.TreeGrid;
-            if (treeGrid == null)
-                return;
+            try
+            {
+                if(_isUpdating)
+                    return;
 
-            var availableWidth = treeGrid.ActualWidth; //TODO: prendre le conteneur des rows et non le TreeGrid lui même
+                _isUpdating = true;
 
-            var rows = treeGrid.Rows.ToArray();
+                Debug.WriteLine($"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}");
+
+                var treeGrid = Columns.TreeGrid;
+                if (treeGrid == null)
+                    return;
+
+                var availableWidth = constraint.Width; //TODO: prendre le conteneur des rows et non le TreeGrid lui même
+
+                var rows = treeGrid.Rows.ToArray();
 
 
-            UpdateAutoColumns(Columns, rows, out var remainingColumns, out var totalAutoWidth);
+                UpdateAutoColumns(Columns, rows, out var remainingColumns, out var totalAutoWidth);
 
-            UpdateAbsoluteColumns(remainingColumns, rows, out remainingColumns, out var totalFixedWidth);
+                UpdateAbsoluteColumns(remainingColumns, rows, out remainingColumns, out var totalFixedWidth);
 
-            var remainingAvailableWidth = availableWidth - (totalAutoWidth + totalFixedWidth);
+                var remainingAvailableWidth = availableWidth - (totalAutoWidth + totalFixedWidth);
 
-            UpdateStarColumns(remainingColumns, rows, out remainingColumns, remainingAvailableWidth);
+                UpdateStarColumns(remainingColumns, rows, out remainingColumns, remainingAvailableWidth);
+
+                if (remainingColumns.Count > 0)
+                {
+                    //TODO: faire le message d'erreur
+                }
+            }
+            finally
+            {
+                _isUpdating = false;
+            }
+
+
         }
 
         private void UpdateAutoColumns(IEnumerable<Column> columns, Row[] rows, out List<Column> remainingColumns, out double totalAutoWidth)
@@ -100,12 +122,16 @@ namespace TreeGridControl
                 return;
             }
 
+
+
             var weightWidth = remainingAvailableWidth / totalWeights;
 
             foreach (var starColumn in starColumns)
             {
                 var weight = starColumn.Width.Value;
                 var actualWidth = weight * weightWidth;
+
+
                 SetColumnActualWidth(starColumn, actualWidth);
             }
         }
@@ -113,6 +139,7 @@ namespace TreeGridControl
 
         private void SetColumnActualWidth(Column column, double actualWidth)
         {
+            Debug.WriteLine($"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}={actualWidth}");
             column.SetActualWidth(actualWidth);
         }
 
@@ -130,12 +157,8 @@ namespace TreeGridControl
                 bestWidth = Math.Max(bestWidth, cell.DesiredSize.Width);
             }
 
-            Debug.WriteLine($"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}={bestWidth}");
-
             return bestWidth;
         }
-
-
 
     }
 }

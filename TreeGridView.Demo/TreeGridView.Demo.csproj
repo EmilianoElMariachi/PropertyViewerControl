@@ -4,11 +4,10 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TreeGridControl\TreeGridControl.csproj" />
+    <ProjectReference Include="..\TreeGridView\TreeGridView.csproj" />
   </ItemGroup>
 
 </Project>

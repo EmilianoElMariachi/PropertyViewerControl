@@ -53,7 +53,7 @@ namespace TreeGridControl
             if (cells == null)
                 return Size.Empty;
 
-            TreeGrid?.Columns.ColumnWidthManager.Update();
+            TreeGrid?.InvalidateMeasure();
 
             var desiredWidth = 0.0;
             var desiredHeight = 0.0;
@@ -61,9 +61,10 @@ namespace TreeGridControl
             foreach (var cell in cells)
             {
                 var colActualWidth = cell.Column.ActualWidth;
-                var availableWidth = (cell.Column.Width.GridUnitType == GridUnitType.Auto) ? double.PositiveInfinity : colActualWidth;
+                var availableWidth =/* (cell.Column.Width.GridUnitType == GridUnitType.Auto) ? double.PositiveInfinity :*/ colActualWidth;
 
                 desiredWidth += colActualWidth;
+                cell.Width = colActualWidth;
                 cell.Measure(new Size(availableWidth, availableSize.Height));
                 desiredHeight = Math.Max(desiredHeight, cell.DesiredSize.Height);
             }
@@ -73,6 +74,12 @@ namespace TreeGridControl
             Debug.WriteLine($"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}={desiredSize}");
 
             return desiredSize;
+        }
+
+
+        protected override void OnChildDesiredSizeChanged(UIElement child)
+        {
+            base.OnChildDesiredSizeChanged(child);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -106,9 +113,10 @@ namespace TreeGridControl
             foreach (var cell in cells)
             {
                 cell.Column.ActualWidthChanged += OnColumnActualWidthChanged;
-                cell.Column.TreeGrid?.Columns.ColumnWidthManager.Update();
+                
                 this.Children.Add(cell);
             }
+            this.TreeGrid?.InvalidateArrange();
         }
 
         /// <summary>
@@ -119,6 +127,7 @@ namespace TreeGridControl
         /// <param name="e"></param>
         private void OnColumnActualWidthChanged(object? sender, ActualWidthChangedEventArg e)
         {
+            
             this.InvalidateMeasure();
         }
     }
